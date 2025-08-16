@@ -1,0 +1,21 @@
+# ملفات نظام التشغيل
+Thumbs.db          # (ويندوز)
+desktop.ini        # (ويندوز)
+
+# ملفات بيئات التطوير (IDE)
+.idea/             # (PhpStorm)
+.vscode/           # (VS Code)
+*.swp              # (Vim)
+
+/vendor/           # مجلد Composer (يتم إنشاؤه عند تنفيذ `composer install`)
+/node_modules/     # مجلد npm/yarn (للمشاريع التي تستخدم JavaScript)
+
+/storage/logs/     # سجلات الأخطاء
+/storage/framework/cache/  # ملفات الكاش
+*.log              # أي ملفات لوج
+
+*.exe
+*.dll
+*.so
+
+/public/uploads/   # أي ملفات يرفعها المستخدمون

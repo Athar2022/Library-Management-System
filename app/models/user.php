@@ -1,41 +1,38 @@
 <?php
 namespace App\Models;
 
-use App\Core\App;
+class User {
+    use LoggingTrait;
 
-class User
-{
-    public function getAllUsers(): array
-    {
-        $stm = App::db()->query("SELECT * FROM users");
-        return $stm->fetchAll();
+    private $pdo;
+
+    public function __construct() {
+        $db = new Database();
+        $this->pdo = $db->getConnection();
     }
 
-    public function addUser(string $name, string $email, string $password): bool
-    {
-        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-
-        $stm = App::db()->prepare("INSERT INTO users (name, email, password) 
-                                   VALUES (:name, :email, :password)");
-        return $stm->execute([
-            'name' => $name,
-            'email' => $email,
-            'password' => $hashedPassword
-        ]);
+    public function addUser($username, $email, $password) {
+        try {
+            $stmt = $this->pdo->prepare("INSERT INTO users (username, email, password) VALUES (:username, :email, :password)");
+            $stmt->execute(['username' => $username, 'email' => $email, 'password' => $password]);
+            $this->logAction("User added: $username");
+        } catch (\PDOException $e) {
+            $this->logAction("Error adding user: " . $e->getMessage());
+        }
     }
 
-    public function deleteUser(int $id): bool
-    {
-        $stm = App::db()->prepare("DELETE FROM users WHERE id=:id");
-        return $stm->execute(['id' => $id]);
+    public function deleteUser($id) {
+        try {
+            $stmt = $this->pdo->prepare("DELETE FROM users WHERE id = :id");
+            $stmt->execute(['id' => $id]);
+            $this->logAction("User deleted: ID $id");
+        } catch (\PDOException $e) {
+            $this->logAction("Error deleting user: " . $e->getMessage());
+        }
     }
 
-    public function findByEmail(string $email): ?array
-    {
-        $stm = App::db()->prepare("SELECT * FROM users WHERE email = :email");
-        $stm->execute(['email' => $email]);
-        $user = $stm->fetch();
-
-        return $user ?: null;
+    public function getAllUsers() {
+        $stmt = $this->pdo->query("SELECT * FROM users");
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 }
